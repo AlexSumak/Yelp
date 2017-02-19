@@ -8,13 +8,13 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
+ 
     
+    //searchbar var
     @IBOutlet weak var SearchBar: UISearchBar!
     
     var businesses: [Business]!
-    var searchTerm: String = ""
-    
     //table view var
     @IBOutlet weak var tableView: UITableView!
     
@@ -24,7 +24,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         //initilazers for UITableViewDataSource, UITableViewDelegate
         tableView.delegate = self
         tableView.dataSource = self
-        
+     
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
 
@@ -33,36 +33,9 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         self.SearchBar.delegate = self
         self.SearchBar.barTintColor = UIColor.clear
         self.SearchBar.backgroundImage = UIImage()
-        
-        
         self.SearchBar.placeholder = "Search for bussiness"
         self.navigationItem.titleView = self.SearchBar
         self.SearchBar.tintColor = UIColor.black
-        
-        
-        
-        
-        
-        // called when keyboard search button pressed
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.endEditing(true)
-            let searchText = searchBar.text!
-            Business.searchWithTerm(term: searchText, completion: { (businesses: [Business]?, error: Error?) -> Void in
-                
-                self.businesses = businesses
-                self.tableView.reloadData()
-                if let businesses = businesses {
-                    for business in businesses {
-                        print(business.name!)
-                        print(business.address!)
-                    }
-                }
-            }
-            )
-            view.endEditing(true)
-        }
-        
-    
         
         
         
@@ -80,20 +53,10 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             
             }
         )
-
-        /* Example of Yelp search with more search options specified
-         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-         self.businesses = businesses
-         
-         for business in businesses {
-         print(business.name!)
-         print(business.address!)
-         }
-         }
-         */
  
-        
+      
     }
+
     
     // requared function for UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -120,21 +83,11 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
  
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
   
 }
 
-// class for search bar
+
+// class for search bar. just copy/paste it if you need it
 extension BusinessesViewController: UISearchBarDelegate{
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         self.navigationItem.rightBarButtonItem = nil
@@ -151,7 +104,25 @@ extension BusinessesViewController: UISearchBarDelegate{
         searchBar.resignFirstResponder()
     }
     
-
+    
+    // called when keyboard search button pressed
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        let searchText = searchBar.text!
+        Business.searchWithTerm(term: searchText, completion: { (businesses: [Business]?, error: Error?) -> Void in
+            
+            self.businesses = businesses
+            self.tableView.reloadData()
+            if let businesses = businesses {
+                for business in businesses {
+                    print(business.name!)
+                    print(business.address!)
+                }
+            }
+        }
+        )
+        view.endEditing(true)
+    }
     
 }
 
