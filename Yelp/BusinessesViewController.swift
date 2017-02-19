@@ -13,7 +13,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     @IBOutlet weak var SearchBar: UISearchBar!
     
     var businesses: [Business]!
-    
+    var searchTerm: String = ""
     
     //table view var
     @IBOutlet weak var tableView: UITableView!
@@ -21,23 +21,44 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        // search bar things 
-        self.SearchBar.delegate = self
-        self.SearchBar.barTintColor = UIColor.clear
-        self.SearchBar.backgroundImage = UIImage()
-        self.SearchBar.placeholder = "Search for bussiness"
-        self.navigationItem.titleView = self.SearchBar
-        self.SearchBar.tintColor = UIColor.black
-
-        
-        
         //initilazers for UITableViewDataSource, UITableViewDelegate
         tableView.delegate = self
         tableView.dataSource = self
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
+
+
+        // search bar things
+        self.SearchBar.delegate = self
+        self.SearchBar.barTintColor = UIColor.clear
+        self.SearchBar.backgroundImage = UIImage()
         
+        
+        self.SearchBar.placeholder = "Search for bussiness"
+        self.navigationItem.titleView = self.SearchBar
+        self.SearchBar.tintColor = UIColor.black
+        
+
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            
+            Business.searchWithTerm(term: searchText, completion: {
+                (businesses: [Business]?, error: Error?) -> Void in self.businesses = businesses
+                self.tableView.reloadData()
+                if let businesses = businesses
+                {
+                    for business in businesses
+                    {
+                        print(business.name!)
+                        print(business.address!)
+                    } } }) }
+
+        
+       
+        
+        
+        
+        /*
         Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
             
             self.businesses = businesses
@@ -61,6 +82,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
          print(business.address!)
          }
          }
+         */
          */
         
     }
@@ -89,6 +111,9 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         // Dispose of any resources that can be recreated.
     }
     
+ 
+    
+    
     /*
      // MARK: - Navigation
      
@@ -98,7 +123,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
      // Pass the selected object to the new view controller.
      }
      */
-    
+  
 }
 
 // class for search bar
@@ -118,3 +143,7 @@ extension BusinessesViewController: UISearchBarDelegate{
         searchBar.resignFirstResponder()
     }
 }
+
+
+    
+
