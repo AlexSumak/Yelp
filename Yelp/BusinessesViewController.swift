@@ -8,8 +8,14 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
- 
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate{
+    
+    
+    
+    //infin scroll vars
+    var isMoreDataLoading = false
+    var searcher: String = ""
+    
     
     //searchbar var
     @IBOutlet weak var SearchBar: UISearchBar!
@@ -38,7 +44,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         self.SearchBar.tintColor = UIColor.black
         
         
-        
        
         Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
             
@@ -55,6 +60,37 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         )
  
       
+    }
+    func loadMoreEntries(){
+        Business.searchWithTerm(term: self.searcher, offset: self.businesses?.count, limit: nil) { (businesses, error) in
+            if let newBusinesses = businesses, newBusinesses.count > 0{
+                self.isLoadingData = false
+                self.businesses?.append(contentsOf: newBusinesses)
+                DispatchQueue.main.async {
+                    self.containerView.isHidden = true
+                    self.activityIndicator.stopAnimating()
+                    self.tableView.reloadData()
+                }
+            }else{
+                self.loadingFooterView.isHidden = true
+            }
+        }
+    }
+    
+    func loadMoreData(){
+        Business.searchWithTerm(term: self.searcher, offset: self.businesses?.count, limit: nil) { (businesses, error) in
+            if let newBusinesses = businesses, newBusinesses.count > 0{
+                self.isLoadingData = false
+                self.businesses?.append(contentsOf: newBusinesses)
+                DispatchQueue.main.async {
+                    self.containerView.isHidden = true
+                    self.activityIndicator.stopAnimating()
+                    self.tableView.reloadData()
+                }
+            }else{
+                self.loadingFooterView.isHidden = true
+            }
+        }
     }
 
     
@@ -82,9 +118,23 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         // Dispose of any resources that can be recreated.
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if(!self.isMoreDataLoading){
+            if(scrollView.contentOffset.y > scrollView.contentSize.height - self.view.frame.size.height){
+                self.isMoreDataLoading = true
+                self.loadMoreData()
+            }
+        }
+    }
+    
+
  
   
 }
+
+
+
+
 
 
 // class for search bar. just copy/paste it if you need it
