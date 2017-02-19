@@ -39,26 +39,34 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         self.navigationItem.titleView = self.SearchBar
         self.SearchBar.tintColor = UIColor.black
         
-
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            
-            Business.searchWithTerm(term: searchText, completion: {
-                (businesses: [Business]?, error: Error?) -> Void in self.businesses = businesses
+        
+        
+        
+        
+        // called when keyboard search button pressed
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.endEditing(true)
+            let searchText = searchBar.text!
+            Business.searchWithTerm(term: searchText, completion: { (businesses: [Business]?, error: Error?) -> Void in
+                
+                self.businesses = businesses
                 self.tableView.reloadData()
-                if let businesses = businesses
-                {
-                    for business in businesses
-                    {
+                if let businesses = businesses {
+                    for business in businesses {
                         print(business.name!)
                         print(business.address!)
-                    } } }) }
-
+                    }
+                }
+            }
+            )
+            view.endEditing(true)
+        }
+        
+    
+        
+        
         
        
-        
-        
-        
-        /*
         Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
             
             self.businesses = businesses
@@ -72,7 +80,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             
             }
         )
-        
+
         /* Example of Yelp search with more search options specified
          Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
          self.businesses = businesses
@@ -83,7 +91,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
          }
          }
          */
-         */
+ 
         
     }
     
@@ -142,8 +150,11 @@ extension BusinessesViewController: UISearchBarDelegate{
         searchBar.text = ""
         searchBar.resignFirstResponder()
     }
+    
+
+    
 }
 
 
-    
+
 
