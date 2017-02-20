@@ -8,19 +8,19 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate{
-    
-    
+class BusinessesViewController: UIViewController{
     
     //infin scroll vars
     var isMoreDataLoading = false
+    var loadMore = 20
     var searcher: String = ""
-    
+    let userDefaults = UserDefaults.standard
     
     //searchbar var
     @IBOutlet weak var SearchBar: UISearchBar!
     
     var businesses: [Business]!
+    
     //table view var
     @IBOutlet weak var tableView: UITableView!
     
@@ -31,6 +31,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         tableView.delegate = self
         tableView.dataSource = self
      
+        // for constraints
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
 
@@ -58,41 +59,17 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             
             }
         )
- 
-      
-    }
-    func loadMoreEntries(){
-        Business.searchWithTerm(term: self.searcher, offset: self.businesses?.count, limit: nil) { (businesses, error) in
-            if let newBusinesses = businesses, newBusinesses.count > 0{
-                self.isLoadingData = false
-                self.businesses?.append(contentsOf: newBusinesses)
-                DispatchQueue.main.async {
-                    self.containerView.isHidden = true
-                    self.activityIndicator.stopAnimating()
-                    self.tableView.reloadData()
-                }
-            }else{
-                self.loadingFooterView.isHidden = true
-            }
-        }
-    }
-    
-    func loadMoreData(){
-        Business.searchWithTerm(term: self.searcher, offset: self.businesses?.count, limit: nil) { (businesses, error) in
-            if let newBusinesses = businesses, newBusinesses.count > 0{
-                self.isLoadingData = false
-                self.businesses?.append(contentsOf: newBusinesses)
-                DispatchQueue.main.async {
-                    self.containerView.isHidden = true
-                    self.activityIndicator.stopAnimating()
-                    self.tableView.reloadData()
-                }
-            }else{
-                self.loadingFooterView.isHidden = true
-            }
-        }
     }
 
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+}
+
+
+
+extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate{
     
     // requared function for UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -107,37 +84,16 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     // requared function for UITableViewDataSource
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier:"BusinessCell" , for: indexPath) as! BusinessCell
-            cell.business = businesses![indexPath.row]
+        cell.business = businesses![indexPath.row]
         
         return cell
     }
     
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if(!self.isMoreDataLoading){
-            if(scrollView.contentOffset.y > scrollView.contentSize.height - self.view.frame.size.height){
-                self.isMoreDataLoading = true
-                self.loadMoreData()
-            }
-        }
-    }
-    
-
- 
-  
 }
 
 
-
-
-
-
-// class for search bar. just copy/paste it if you need it
+// extension for search bar. just copy/paste it if you need it
 extension BusinessesViewController: UISearchBarDelegate{
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         self.navigationItem.rightBarButtonItem = nil
@@ -173,9 +129,44 @@ extension BusinessesViewController: UISearchBarDelegate{
         )
         view.endEditing(true)
     }
-    
 }
 
 
 
 
+//infifnite scroll extension
+extension BusinessesViewController: UIScrollViewDelegate{
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = tableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
+                isMoreDataLoading = true
+                
+                self.loadMore += 20
+                
+                loadMoreData()
+                
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func loadMoreData() {
+        let prev = self.userDefaults.string(forKey: "searchQuery")
+        
+        Business.searchWithTerm(term: prev!, offset: loadMore, completion: { (businesses: [Business]?, error: Error?) -> Void in
+            
+            self.businesses.append(contentsOf: businesses!)
+            
+            self.isMoreDataLoading = false
+            
+            self.tableView.reloadData()
+            
+        })
+    
+    }
+}
