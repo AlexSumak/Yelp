@@ -17,7 +17,7 @@ Video Walkthrough
 
 Here's a walkthrough of implemented user stories: 
 <img src='http://i.imgur.com/qvbqyM6.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
+http://i.imgur.com/qvbqyM6.gif
 Video Walkthrough GIF created with GiphyCapcture.
 
 License 
