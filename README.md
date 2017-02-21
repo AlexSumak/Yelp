@@ -16,7 +16,7 @@ Infinite scroll for restaurant results.
 Video Walkthrough
 
 Here's a walkthrough of implemented user stories: 
-<img src='http://i.imgur.com/0wIRemW.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/0wIRemW.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 Video Walkthrough GIF created with GiphyCapcture.
 
