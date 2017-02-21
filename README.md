@@ -20,7 +20,7 @@ Here's a walkthrough of implemented user stories:
 
 Video Walkthrough GIF created with GiphyCapcture.
 
-License
+License 
 
 Copyright 2017 Alex Sumak
 
